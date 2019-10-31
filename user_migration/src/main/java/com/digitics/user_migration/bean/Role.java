@@ -2,24 +2,26 @@ package com.digitics.user_migration.bean;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="role")
 public class Role {
 
+	@Id
 	@Column(name="Role_Id")
-	private int RoleId;
+	private int roleId;
 	
 	@Column(name="Role_Name")
 	private String roleName;
 
 	public int getRoleId() {
-		return RoleId;
+		return roleId;
 	}
 
 	public void setRoleId(int roleId) {
-		RoleId = roleId;
+		this.roleId = roleId;
 	}
 
 	public String getRoleName() {
@@ -29,5 +31,5 @@ public class Role {
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
 	}
-	
+
 }

@@ -1,5 +1,8 @@
 package com.digitics.user_migration.service;
 
-public class UserService {
 
+public interface UserService {
+
+	public void userRegistration();
+	
 }

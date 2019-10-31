@@ -1,5 +1,6 @@
 package com.digitics.user_migration.dao;
 
-public class UserDao {
+public interface UserDao {
 
+	public void userRegistration();
 }
