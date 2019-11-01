@@ -8,7 +8,5 @@ public class UserMigrationApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(UserMigrationApplication.class, args);
-	
 	}
-	
 }
