@@ -1,4 +1,4 @@
-package com.digitics.user_migration.dto;
+package com.digilytics.user_migration.dto;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.digitics.user_migration.bean;
+package com.digilytics.user_migration.bean;
 
 import java.util.Set;
 

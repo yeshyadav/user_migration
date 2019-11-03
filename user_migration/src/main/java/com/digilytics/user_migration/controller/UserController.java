@@ -1,4 +1,4 @@
-package com.digitics.user_migration.controller;
+package com.digilytics.user_migration.controller;
 
 import java.io.IOException;
 
@@ -11,11 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpServerErrorException.InternalServerError;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.digitics.user_migration.bean.User;
-import com.digitics.user_migration.service.UserService;
+import com.digilytics.user_migration.bean.User;
+import com.digilytics.user_migration.service.UserService;
 
 @RestController
 @RequestMapping("/User")

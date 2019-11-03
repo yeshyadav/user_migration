@@ -1,4 +1,4 @@
-package com.digitics.user_migration;
+package com.digilytics.user_migration;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package com.digitics.user_migration;
+package com.digilytics.user_migration;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

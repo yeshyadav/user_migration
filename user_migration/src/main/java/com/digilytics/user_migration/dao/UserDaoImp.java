@@ -1,4 +1,4 @@
-package com.digitics.user_migration.dao;
+package com.digilytics.user_migration.dao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,9 +13,9 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.digitics.user_migration.bean.Role;
-import com.digitics.user_migration.bean.User;
-import com.digitics.user_migration.dto.UserResponse;
+import com.digilytics.user_migration.bean.Role;
+import com.digilytics.user_migration.bean.User;
+import com.digilytics.user_migration.dto.UserResponse;
 
 @Repository
 public class UserDaoImp implements UserDao{
@@ -45,18 +45,16 @@ public class UserDaoImp implements UserDao{
 				Object obj = session.save(user1);
 				if (obj.toString().equals("0"))
 					userResponse.setNoOfRowFail(userObj.getRowNum());
-				userResponse.setNoOfRowPass(userObj.getRowNum());
+					userResponse.setNoOfRowPass(userObj.getRowNum());
 				session.getTransaction().commit();
-				
 			}else {
-				errorMap.put("Email", user1.getEmailAddress());
-				errorMap.put("Name", user1.getName());
-				errorMap.put("Roles", user1.getRoles());
+				errorMap.put("Email", userObj.getEmailAddress());
+				errorMap.put("Name", userObj.getName());
+				errorMap.put("Roles", userObj.getRoles());
 				errorMap.put("Errors", "This email already exists !");
 				System.out.println("errormap::"+errorMap);
 				userResponse.setErrorMap(errorMap);
 			}
-			
 			userResList.add(userResponse);
 		}
 		System.out.println("lisrt size::"+userResList.size());
@@ -68,9 +66,5 @@ public class UserDaoImp implements UserDao{
 		 Query<?> query = session.createQuery("select 1 from User e where e.emailAddress = :email");
 		        query.setString("email", email );
 		    return (query.uniqueResult() != null);
-	}
-	
-	public void isRoleValid() {
-		
 	}
 }

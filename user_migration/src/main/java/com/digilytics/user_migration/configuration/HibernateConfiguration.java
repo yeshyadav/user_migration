@@ -1,4 +1,4 @@
-package com.digitics.user_migration.configuration;
+package com.digilytics.user_migration.configuration;
 import java.util.Properties;
 
 import javax.sql.DataSource;
