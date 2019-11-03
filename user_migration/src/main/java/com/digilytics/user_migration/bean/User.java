@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
@@ -15,8 +16,6 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import org.springframework.stereotype.Component;
-
-import javax.persistence.JoinColumn;
 
 @Component
 @Entity
@@ -35,10 +34,16 @@ public class User {
 	private String name;
 
 	@Transient
-	private int rowNum;
+	private int noOfRowPass;
+	
+	@Transient
+	private int noOfRowFail;
 	
 	@Transient
 	private int totalRowNum;
+	
+	@Transient
+	private String errors;
 
 	@Transient
 	private String Roles;
@@ -95,12 +100,28 @@ public class User {
 		this.role = role;
 	}
 
-	public int getRowNum() {
-		return rowNum;
+	public int getNoOfRowPass() {
+		return noOfRowPass;
 	}
 
-	public void setRowNum(int rowNum) {
-		this.rowNum = rowNum;
+	public void setNoOfRowPass(int noOfRowPass) {
+		this.noOfRowPass = noOfRowPass;
 	}
-	
+
+	public int getNoOfRowFail() {
+		return noOfRowFail;
+	}
+
+	public void setNoOfRowFail(int noOfRowFail) {
+		this.noOfRowFail = noOfRowFail;
+	}
+
+	public String getErrors() {
+		return errors;
+	}
+
+	public void setErrors(String errors) {
+		this.errors = errors;
+	}
+
 }

@@ -23,7 +23,7 @@ public class UserDaoImp implements UserDao{
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	public List<UserResponse> userRegistration(List<User> userList, Set<Role> roleSet) {
+	public UserResponse userRegistration(List<User> userList, Set<Role> roleSet) {
 		System.out.println("User Registration dao metghod calling !!");
 		Session session = sessionFactory.getCurrentSession();
 		System.out.println("Session ::>>" + session);
@@ -31,7 +31,6 @@ public class UserDaoImp implements UserDao{
 		Iterator<User> listOfUser = userList.iterator();
 		List<UserResponse> userResList = new ArrayList<UserResponse>();
 		UserResponse userResponse = new UserResponse();
-		// int counter = 0;
 		while (listOfUser.hasNext()) {
 			User user1 = new User();
 			User userObj = (User) listOfUser.next();
@@ -40,12 +39,7 @@ public class UserDaoImp implements UserDao{
 				user1.setEmailAddress(userObj.getEmailAddress());
 				user1.setName(userObj.getName());
 				user1.setRole(roleSet);
-				user1.setTotalRowNum(userObj.getTotalRowNum());
-				// user1.setRowNum(userObj.getRowNum());
-				Object obj = session.save(user1);
-				if (obj.toString().equals("0"))
-					userResponse.setNoOfRowFail(userObj.getRowNum());
-					userResponse.setNoOfRowPass(userObj.getRowNum());
+				session.save(user1);
 				session.getTransaction().commit();
 			}else {
 				errorMap.put("Email", userObj.getEmailAddress());
@@ -55,10 +49,11 @@ public class UserDaoImp implements UserDao{
 				System.out.println("errormap::"+errorMap);
 				userResponse.setErrorMap(errorMap);
 			}
-			userResList.add(userResponse);
+			//userResList.add(userResponse);
 		}
-		System.out.println("lisrt size::"+userResList.size());
-		return userResList;
+		userResponse.setErrorMap(errorMap);
+		System.out.println("userResponse size::"+userResponse);
+		return userResponse;
 	}
 	
 	@SuppressWarnings("deprecation")

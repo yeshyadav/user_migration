@@ -1,6 +1,8 @@
 package com.digilytics.user_migration.controller;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +27,7 @@ public class UserController {
 	UserService userService;
 	
 	@PostMapping(value="/register", consumes = { "multipart/form-data" })
-	public ResponseEntity<User> userRegistration(@RequestPart("file") MultipartFile file) throws IOException {
+	public ResponseEntity<Map<String,List<Object>>> userRegistration(@RequestPart("file") MultipartFile file) throws IOException {
 		System.out.println("Calling register api:::");
 		System.out.println("file::"+file);
 		System.out.println("Uploaded File: ");
@@ -33,8 +35,8 @@ public class UserController {
 		System.out.println("Type : " + file.getContentType());
 		System.out.println("Name : " + file.getOriginalFilename());
 		System.out.println("Size : " + file.getSize());
-		userService.userRegistration(file);
-		return new ResponseEntity<User>(HttpStatus.OK);
+		Map<String,List<Object>> userRes = userService.userRegistration(file);
+		return new ResponseEntity<Map<String, List<Object>>>(userRes,HttpStatus.OK);
 	}
 	  @ExceptionHandler({RuntimeException.class})
 	    public ResponseEntity<String> handleRunTimeException(RuntimeException e) {

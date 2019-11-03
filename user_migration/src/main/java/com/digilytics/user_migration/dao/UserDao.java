@@ -9,5 +9,5 @@ import com.digilytics.user_migration.dto.UserResponse;
 
 public interface UserDao {
 
-	public List<UserResponse> userRegistration(List<User> userList,Set<Role> roleSet);
+	public UserResponse userRegistration(List<User> userList,Set<Role> roleSet);
 }

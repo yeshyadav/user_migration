@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -14,8 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.digilytics.user_migration.bean.Role;
@@ -32,56 +34,91 @@ public class UserServiceImpl implements UserService{
 	@Autowired
 	private UserDao userDao;
 	
-	public List<UserResponse> userRegistration(MultipartFile file) throws IOException {
+	public Map<String, List<Object>>  userRegistration(MultipartFile file) throws IOException {
 		
 			Reader reader = new InputStreamReader(file.getInputStream());
 			CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
 			List<String[]> allData = csvReader.readAll();
-			List<User> userList = new ArrayList<User>();
-			Set<Role> roleSet = new LinkedHashSet<>();
-			int rowNum=1;
+			Map<String,List<Object>> finalRes = new LinkedHashMap<String,List<Object>>();
+			//int rowNumPass=1;
+			//int rowNumFail=1;
+			//String filePath = "";
+			//new ArrayList<>().add(filePath)
+			int intRowCount = 1; 
+			List<Object> noOfRowsPassCount = new ArrayList<Object>();
+			List<Object> noOfRowsFailCount = new ArrayList<Object>();
+			List<User> failRecordList = new ArrayList<User>();
+			
+			System.out.println("All data size::>>> "+allData.size());
+			List<Object> filPathList = null;
 			for (String[] row : allData) {
+				List<User> userList = new ArrayList<User>();
+				Set<Role> roleSet = new LinkedHashSet<>();
 				String[] strErrorArr = new String[row.length + 1];
 				User user = new User();
 				Role role = new Role(); 
 				if(!isEmailValid(row[0])) {
-					strErrorArr[0]=row[0];
+					user.setEmailAddress(row[0]);
+					user.setName(row[1]);
+					user.setRoles(row[2]);
+					user.setErrors("Invalid Email");
+					/*strErrorArr[0]=row[0];
 					strErrorArr[1]=row[1];
 					strErrorArr[2]=row[2];
-					strErrorArr[3]="Invalid Email";
+					strErrorArr[3]="Invalid Email";*/
+					//user.setNoOfRowFail(intRowCount);
 					role.setRoleName(row[2]);
+					failRecordList.add(user);
+					//noOfRowsFailCount.add(String.valueOf(user.getNoOfRowFail()));
+					noOfRowsFailCount.add(intRowCount);
 				}if(!isRoleValid(row[2])) {
-					strErrorArr[0]=row[0];
+					user.setEmailAddress(row[0]);
+					user.setName(row[1]);
+					user.setRoles(row[2]);
+					/*strErrorArr[0]=row[0];
 					strErrorArr[1]=row[1];
-					strErrorArr[2]=row[2];
-					if(strErrorArr[3] != null) {
-						strErrorArr[3]=strErrorArr[3]+"#Invalid Role";
+					strErrorArr[2]=row[2];*/
+					if(user.getEmailAddress() != null) {
+						user.setErrors(user.getErrors()+"#Invalid Role");
 					}else {
-						strErrorArr[3]="Invalid Role";
+						user.setErrors("Invalid Role");
+						//user.setNoOfRowFail(intRowCount);
+						failRecordList.add(user);
+						//noOfRowsFailCount.add(String.valueOf(user.getNoOfRowFail()));
+						noOfRowsFailCount.add(intRowCount);
 					}
-					createErrorFile(strErrorArr);
-				}
-				else {
+				}else {
 					user.setEmailAddress(row[0]);
 					user.setName(row[1]);
 					user.setTotalRowNum(allData.size());
-					user.setRowNum(rowNum);
+					user.setNoOfRowPass(intRowCount);
 					user.setRoles(row[2]);
 					role.setRoleName(row[2]);
 					userList.add(user);
 					roleSet.add(role);
-					rowNum++;
+					UserResponse userResList = userDao.userRegistration(userList,roleSet);
+					User newUser = new User();
+					if(userResList.getErrorMap().containsKey("Errors")) {
+						newUser.setEmailAddress(userResList.getErrorMap().get("Email"));
+						newUser.setName(userResList.getErrorMap().get("Name"));
+						newUser.setRoles(userResList.getErrorMap().get("Roles"));
+						newUser.setErrors(userResList.getErrorMap().get("Errors"));
+						failRecordList.add(newUser);
+						noOfRowsFailCount.add(intRowCount);
+					}else {
+						noOfRowsPassCount.add(intRowCount);
+					}
+					//noOfRowsPassCount.add(String.valueOf(intRowCount));
 				}
+				intRowCount++;
 			}
-			List<UserResponse> userResList = userDao.userRegistration(userList,roleSet);
-			Iterator<UserResponse> userLisrItr = userResList.iterator();
-			while(userLisrItr.hasNext()) {
-				UserResponse userResObj = (UserResponse)userLisrItr.next();
-				if(userResObj.getErrorMap().isEmpty()) {
-					
-				}
+			if(!failRecordList.isEmpty()) {
+				filPathList = createErrorFile(failRecordList);
 			}
-			return userResList;
+			finalRes.put("no_of_rows_parsed",noOfRowsPassCount);
+			finalRes.put("no_of_rows_failed", noOfRowsFailCount);
+			finalRes.put("error_file_url", filPathList);
+			return finalRes;
 	}
 	
 	  boolean isEmailValid(String email) {
@@ -107,7 +144,8 @@ public class UserServiceImpl implements UserService{
 		return false;
 	}
 		
-	String createErrorFile(String[] errorArr) throws IOException {
+ 	 List<Object> createErrorFile(List<User> failRowsList) throws IOException {
+		List<Object> filePathList = new ArrayList<Object>();
 		String filePath = "E:\\java\\UserBulkFile.csv";
 		System.out.println(filePath);
 		File file = new File(filePath);
@@ -119,8 +157,18 @@ public class UserServiceImpl implements UserService{
 		String[] header = { "Email", "Name", "Role", "Errors" };
 		writer.writeNext(header);
 		// added error data
-		writer.writeNext(errorArr);
+		Iterator<User> itrObj =  failRowsList.iterator();
+		while(itrObj.hasNext()) {
+			String[] errorArr = new String[5];
+			User user= (User)itrObj.next();
+			errorArr[0] = user.getEmailAddress();
+			errorArr[1] = user.getName();
+			errorArr[2] = user.getRoles();
+			errorArr[3] = user.getErrors();
+			writer.writeNext(errorArr);
+		}
 		writer.close();
-		return filePath;
+		filePathList.add(filePath);
+		return filePathList;
 	 }
 }
