@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,29 +29,31 @@ public class UserServiceImpl implements UserService{
 	@Autowired
 	private UserDao userDao;
 	
-	public void userRegistration(MultipartFile file) {
+	public void userRegistration(MultipartFile file) throws IOException {
 		
-		try {
+		//try {
 			Reader reader = new InputStreamReader(file.getInputStream());
 			CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
 			List<String[]> allData = csvReader.readAll();
 			// Print Data.
-			HashMap<String, ArrayList<String>> hm = new HashMap<String,ArrayList<String>>();
-			List userList = new ArrayList();
-			List roleList = new ArrayList();
-			Set roleSet = new HashSet<>();
-			int rowCount=0;
+			//HashMap<String, ArrayList<String>> hm = new HashMap<String,ArrayList<String>>();
+			List<User> userList = new ArrayList<User>();
+			//List roleList = new ArrayList();
+			Set<Role> roleSet = new LinkedHashSet<>();
+			int rowNum=1;
 			for (String[] row : allData) {
 				User user = new User();
 				Role role = new Role(); 
 				user.setEmailAddress(row[0]);
 				user.setName(row[1]);
-				user.setRowNum(rowCount+1);
+				user.setTotalRowNum(allData.size());
+				user.setRowNum(rowNum);
 				//user.setRoles(row[2]);
 				role.setRoleName(row[2]);
 				//role.setRoleName(row[2]);
 				userList.add(user);
 				roleSet.add(role);
+				rowNum++;
 				//userList.add(role);
 			}
 			userDao.userRegistration(userList,roleSet);
@@ -65,9 +68,9 @@ public class UserServiceImpl implements UserService{
 				hashmap.put(key, value);
 			}*/
 			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		//} catch (IOException e) {
+			//e.printStackTrace();
+		//}
 	}
 	
 	public void isUserValidate() {

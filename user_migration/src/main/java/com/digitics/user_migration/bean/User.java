@@ -20,28 +20,31 @@ import javax.persistence.JoinColumn;
 
 @Component
 @Entity
-@Table(name="user",uniqueConstraints=@UniqueConstraint(columnNames={"Email_Address"}))
+@Table(name = "user", uniqueConstraints = @UniqueConstraint(columnNames = { "Email_Address" }))
 public class User {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name="userid")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "userid")
 	private int userId;
-	
-	@Column(name="Email_Address")
+
+	@Column(name = "Email_Address")
 	private String emailAddress;
-	
-	@Column(name="Name")
+
+	@Column(name = "Name")
 	private String name;
-	
+
 	@Transient
 	private int rowNum;
 	
 	@Transient
+	private int totalRowNum;
+
+	@Transient
 	private String Roles;
-	
-	@ManyToMany(targetEntity=Role.class,cascade=CascadeType.ALL)
-	@JoinTable(name="user_role",joinColumns=@JoinColumn(name="user_id_fk",referencedColumnName="userId"),inverseJoinColumns=@JoinColumn(name="role_id_fk",referencedColumnName="roleId"))
+
+	@ManyToMany(targetEntity = Role.class, cascade = CascadeType.ALL)
+	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id_fk", referencedColumnName = "userId"), inverseJoinColumns = @JoinColumn(name = "role_id_fk", referencedColumnName = "roleId"))
 	private Set role;
 
 	public int getUserId() {
@@ -76,12 +79,12 @@ public class User {
 		Roles = roles;
 	}
 
-	public int getRowNum() {
-		return rowNum;
+	public int getTotalRowNum() {
+		return totalRowNum;
 	}
 
-	public void setRowNum(int rowNum) {
-		this.rowNum = rowNum;
+	public void setTotalRowNum(int totalRowNum) {
+		this.totalRowNum = totalRowNum;
 	}
 
 	public Set getRole() {
@@ -91,4 +94,13 @@ public class User {
 	public void setRole(Set role) {
 		this.role = role;
 	}
+
+	public int getRowNum() {
+		return rowNum;
+	}
+
+	public void setRowNum(int rowNum) {
+		this.rowNum = rowNum;
+	}
+	
 }

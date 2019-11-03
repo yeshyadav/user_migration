@@ -5,10 +5,13 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpServerErrorException.InternalServerError;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.digitics.user_migration.bean.User;
@@ -16,6 +19,7 @@ import com.digitics.user_migration.service.UserService;
 
 @RestController
 @RequestMapping("/User")
+@ControllerAdvice
 public class UserController {
 
 	@Autowired(required=true)
@@ -33,4 +37,12 @@ public class UserController {
 		userService.userRegistration(file);
 		return new ResponseEntity<User>(HttpStatus.OK);
 	}
+	  @ExceptionHandler({RuntimeException.class})
+	    public ResponseEntity<String> handleRunTimeException(RuntimeException e) {
+	        return error(HttpStatus.INTERNAL_SERVER_ERROR, e);
+	    }
+	  private ResponseEntity<String> error(HttpStatus status, Exception e) {
+	       // log.error("Exception : ", e);
+	        return ResponseEntity.status(status).body(e.getMessage());
+	    }
 }
