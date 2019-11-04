@@ -1,6 +1,5 @@
 package com.digilytics.user_migration.dao;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,6 +9,8 @@ import java.util.Set;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -23,13 +24,13 @@ public class UserDaoImp implements UserDao{
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+	
 	public UserResponse userRegistration(List<User> userList, Set<Role> roleSet) {
-		System.out.println("User Registration dao metghod calling !!");
 		Session session = sessionFactory.getCurrentSession();
-		System.out.println("Session ::>>" + session);
+		LOGGER.info("User Registration dao metghod calling <<Session>>"+session);
 		Map<String,String> errorMap = new HashMap<String,String>();
 		Iterator<User> listOfUser = userList.iterator();
-		List<UserResponse> userResList = new ArrayList<UserResponse>();
 		UserResponse userResponse = new UserResponse();
 		while (listOfUser.hasNext()) {
 			User user1 = new User();
@@ -49,10 +50,8 @@ public class UserDaoImp implements UserDao{
 				System.out.println("errormap::"+errorMap);
 				userResponse.setErrorMap(errorMap);
 			}
-			//userResList.add(userResponse);
 		}
 		userResponse.setErrorMap(errorMap);
-		System.out.println("userResponse size::"+userResponse);
 		return userResponse;
 	}
 	

@@ -9,28 +9,25 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.tomcat.util.http.parser.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.function.ServerRequest.Headers;
 
-import com.digilytics.user_migration.bean.User;
 import com.digilytics.user_migration.service.UserService;
 
 @RestController
@@ -41,31 +38,29 @@ public class UserController {
 	@Autowired(required=true)
 	UserService userService;
 	
+	@Value("${spring.application.image_root}")
+	String imageRootPath;
+	
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+	
 	@PostMapping(value="/register", consumes = { "multipart/form-data" })
 	public ResponseEntity<Map<String,List<Object>>> userRegistration(@RequestPart("file") MultipartFile file) throws IOException {
-		System.out.println("Calling register api:::");
-		System.out.println("file::"+file);
-		System.out.println("Uploaded File: ");
-		System.out.println("Name : " + file.getName());
-		System.out.println("Type : " + file.getContentType());
-		System.out.println("Name : " + file.getOriginalFilename());
-		System.out.println("Size : " + file.getSize());
+		LOGGER.info("Call register Api::"+"File Name:"+file.getName()+"<<content type>>"+file.getContentType()+""+file.getSize());
 		Map<String,List<Object>> userRes = userService.userRegistration(file);
 		return new ResponseEntity<Map<String, List<Object>>>(userRes,HttpStatus.OK);
 	}
 	
-	@RequestMapping("/download/{fileName:.+}")
-	public void downloadPDFResource(HttpServletRequest request, HttpServletResponse response,
+	@GetMapping("/download/{fileName:.+}")
+	public void downloadCsvFile(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable("fileName") String fileName) throws IOException {
-
-		File file = new File("E:\\\\java\\\\" + fileName);
+		LOGGER.info("Call download Api::<<file full path:>>"+imageRootPath+fileName);
+		File file = new File(imageRootPath+fileName);
+		System.out.println(">>>>>>>"+file.getName());
 		if (file.exists()) {
-			//get the mimetype
 			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
 			if (mimeType == null) {
 				mimeType = "application/octet-stream";
 			}
-
 			response.setContentType(mimeType);
 			response.setHeader("Content-Disposition", String.format("inline; filename=\"" + file.getName() + "\""));
 			response.setContentLength((int) file.length());

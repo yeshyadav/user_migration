@@ -1,0 +1,8 @@
+"Email","Name","Role","Errors"
+"ab@gmail.com","Test2","SA#admin#SU","This email already exists !",
+"ccc@gmail.com","Test3","SA#admin","This email already exists !",
+"bb@@gmail.com","Test4","SA#admin#SU","Invalid Email",
+"zzzs@gmail.com","Test5","SA#admin#SU","This email already exists !",
+"vvv@gmail.com","Test6","SA#admin#SU","This email already exists !",
+"@axx@gmail.com","Test7","SA","Invalid Email#Invalid Role",
+"fffff@dddd@gmail.com","Test8","SA#","Invalid Email#Invalid Role",
