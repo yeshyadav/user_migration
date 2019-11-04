@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService{
 	
 	public Map<String, List<Object>>  userRegistration(MultipartFile file) throws IOException {
 		
+			System.out.println("file data::"+file);
 			Reader reader = new InputStreamReader(file.getInputStream());
 			CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
 			List<String[]> allData = csvReader.readAll();
@@ -44,11 +45,10 @@ public class UserServiceImpl implements UserService{
 			//int rowNumFail=1;
 			//String filePath = "";
 			//new ArrayList<>().add(filePath)
-			int intRowCount = 1; 
+			int intRowCount = 2; 
 			List<Object> noOfRowsPassCount = new ArrayList<Object>();
 			List<Object> noOfRowsFailCount = new ArrayList<Object>();
 			List<User> failRecordList = new ArrayList<User>();
-			
 			System.out.println("All data size::>>> "+allData.size());
 			List<Object> filPathList = null;
 			for (String[] row : allData) {
@@ -57,7 +57,9 @@ public class UserServiceImpl implements UserService{
 				String[] strErrorArr = new String[row.length + 1];
 				User user = new User();
 				Role role = new Role(); 
+				boolean emailErrorFlag = false;
 				if(!isEmailValid(row[0])) {
+					emailErrorFlag = true;
 					user.setEmailAddress(row[0]);
 					user.setName(row[1]);
 					user.setRoles(row[2]);
@@ -87,7 +89,7 @@ public class UserServiceImpl implements UserService{
 						//noOfRowsFailCount.add(String.valueOf(user.getNoOfRowFail()));
 						noOfRowsFailCount.add(intRowCount);
 					}
-				}else {
+				}else if(!emailErrorFlag){
 					user.setEmailAddress(row[0]);
 					user.setName(row[1]);
 					user.setTotalRowNum(allData.size());
